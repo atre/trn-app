@@ -1,0 +1,140 @@
+version: '3.8'
+
+services:
+  entry:
+    build: 
+      context: ./dice-entry
+      target: dev
+    container_name: dice-entry
+    env_file:
+      - ./dice-entry/.env.local
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./dice-entry:/app
+      - entry_node_modules:/app/node_modules
+    networks:
+      - dice_network
+
+  logic:
+    build: 
+      context: ./dice-logic
+      target: dev    
+    container_name: dice-logic
+    env_file:
+      - ./dice-logic/.env.local
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./dice-logic:/app
+      - logic_node_modules:/app/node_modules
+    networks:
+      - dice_network
+
+  storage:
+    build: 
+      context: ./dice-storage
+      target: dev    
+    container_name: dice-storagec
+    env_file:
+      - ./dice-storage/.env.local
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./dice-storage:/app
+      - storage_node_modules:/app/node_modules
+    networks:
+      - dice_network
+
+  management:
+    build: 
+      context: ./dice-management
+      target: dev     
+    container_name: dice-management
+    env_file:
+      - ./dice-management/.env.local
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./dice-management:/app
+      - management_node_modules:/app/node_modules
+    networks:
+      - dice_network
+
+  ui:
+    build: ./dice-ui
+    container_name: dice-ui
+    env_file:
+      - ./dice-ui/.env.local
+    networks:
+      - dice_network
+    volumes:
+      - ./dice-ui:/app
+      - ui_node_modules:/app/node_modules
+
+  rabbitmq:
+    container_name: dice-rabbitmq
+    image: rabbitmq:3-management
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - dice_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    container_name: dice-redis
+    image: redis:7.2.3-alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - dice_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: postgres:14.4-alpine
+    container_name: dice-db
+    volumes:
+      - dice_pg_data:/var/lib/postgresql/data
+    networks:
+      - dice_network
+    logging:
+      options:
+        max-size: 10m
+        max-file: '3'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rabbitmq_data:
+  redis_data:
+  dice_pg_data: 
+  entry_node_modules:
+  logic_node_modules:
+  storage_node_modules:
+  management_node_modules:
+  ui_node_modules:
+
+networks:
+  dice_network:
+    driver: bridge

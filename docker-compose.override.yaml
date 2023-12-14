@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  entry:
+    ports:
+      - 8080:8080
+    env_file:
+      - ./dice-entry/.env.local
+  logic:
+    ports:
+      - 8085:8085
+    env_file:
+      - ./dice-logic/.env.local
+
+  storage:
+    ports:
+      - 8082:8082
+    env_file:
+      - ./dice-storage/.env.local
+
+  management:
+    ports:
+      - 8079:8079
+    env_file:
+      - ./dice-management/.env.local
+
+  ui:
+    ports:
+      - 3000:80
+    # env_file:
+      # - ./dice-ui/.env.local
+    environment:
+      - VITE_MANAGEMENT_URL=http://management
+      - VITE_ENTRY_URL=http://entry
+
+  rabbitmq:
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  redis:
+    ports:
+      - 6379:6379
+
+  postgres:
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
