@@ -18,4 +18,4 @@ FROM node:21-alpine
 WORKDIR /app
 COPY --from=builder /app /app
 EXPOSE 8079
-CMD yarn run migrate && yarn start
+CMD [ "yarn", "start" ]
