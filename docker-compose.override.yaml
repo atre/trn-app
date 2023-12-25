@@ -27,11 +27,12 @@ services:
   ui:
     ports:
       - 3000:80
-    # env_file:
-      # - ./dice-ui/.env.local
     environment:
-      - VITE_MANAGEMENT_URL=http://management
-      - VITE_ENTRY_URL=http://entry
+      - MY_APP_MANAGEMENT_URL=http://management:8079
+      - MY_APP_ENTRY_URL=http://entry:8080
+      - MY_APP_IP=192.168.1.1
+      - MY_APP_HOSTNAME=example.container_name
+      - MY_APP_POD_NAME=example.container_name
 
   rabbitmq:
     environment:

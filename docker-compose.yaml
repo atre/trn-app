@@ -39,7 +39,7 @@ services:
     build: 
       context: ./dice-storage
       target: dev    
-    container_name: dice-storagec
+    container_name: dice-storage
     env_file:
       - ./dice-storage/.env.local
     depends_on:
@@ -52,13 +52,13 @@ services:
     volumes:
       - ./dice-storage:/app
       - storage_node_modules:/app/node_modules
+    command: sh -c "yarn migrate && yarn dev"
     networks:
       - dice_network
 
   management:
     build: 
       context: ./dice-management
-      target: dev     
     container_name: dice-management
     env_file:
       - ./dice-management/.env.local
@@ -68,14 +68,16 @@ services:
     volumes:
       - ./dice-management:/app
       - management_node_modules:/app/node_modules
+    command: sh -c "yarn migrate && yarn dev"
     networks:
       - dice_network
 
   ui:
     build: ./dice-ui
     container_name: dice-ui
-    env_file:
-      - ./dice-ui/.env.local
+    depends_on:
+      - management
+      - entry
     networks:
       - dice_network
     volumes:

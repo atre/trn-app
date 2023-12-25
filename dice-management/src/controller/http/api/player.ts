@@ -22,10 +22,10 @@ export class PlayerController {
 
       // Hash password and save new user
       const hashedPassword = await AuthService.hashPassword(password);
-      await knex('players').insert({ nickname, password: hashedPassword });
+      const [user] = await knex('players').insert({ nickname, password: hashedPassword }, ['id']);
 
       // Generate JWT token
-      const token = AuthService.generateToken(users[0].id, nickname);
+      const token = AuthService.generateToken(user.id, nickname);
 
       const result: ILoginResponse = { nickname, token };
       return res.status(201).send({ data: result });
