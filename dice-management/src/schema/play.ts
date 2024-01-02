@@ -55,3 +55,10 @@ export const loginRequestSchema: RequestSchema<ILoginRequest> = {
     additionalProperties: false,
   },
 };
+
+export interface ISystemInfoResponse {
+  ip: string;
+  hostname: string;
+  podName: string;
+  nodeName: string;
+}

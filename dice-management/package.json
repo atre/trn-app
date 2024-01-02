@@ -10,7 +10,8 @@
     "dev": "nodemon -e ts -w src -x ts-node src/bin/www",
     "start": "node build/bin/www",
     "build": "tsc",
-    "migrate": "knex migrate:latest"
+    "migrate": "knex migrate:latest",
+    "seed": "knex seed:run"
   },
   "dependencies": {
     "ajv": "^8.12.0",

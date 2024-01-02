@@ -3,9 +3,10 @@ import { knex } from '../../../db';
 import { ConflictError } from '../../../errors/conflict-error';
 import { UnauthorizedError } from '../../../errors/unauthorized-error';
 import {
-  ILoginRequest, ILoginResponse, IRegisterRequest, IRegisterResponse,
+  ILoginRequest, ILoginResponse, IRegisterRequest, IRegisterResponse, ISystemInfoResponse,
 } from '../../../schema/play';
 import { AuthService } from '../../../service/auth';
+import os from 'os';
 
 export class PlayerController {
   register: (
@@ -52,5 +53,34 @@ export class PlayerController {
 
       return res.json({ data: { nickname: user.nickname, token } });
     };
+
+  systemInfo: (
+    req: IRequest<EmptyObject>,
+    res: IResponse<ISystemInfoResponse>
+  ) => Promise<IResponse<ISystemInfoResponse>> = async (_req, res) => {
+    const networkInterfaces = os.networkInterfaces();
+    let serverIp = '';
+    for (const netInterface in networkInterfaces) {
+      for (const networkInterface of networkInterfaces[netInterface] || []) {
+        if (networkInterface.family === 'IPv4' && !networkInterface.internal) {
+          serverIp = networkInterface.address;
+          break;
+        }
+      }
+      if (serverIp) break;
+    }    
+    const hostname = os.hostname();
+    const podName = process.env.MY_POD_NAME;
+    const nodeName = process.env.MY_NODE_NAME;
+
+    const result: ISystemInfoResponse = {
+      ip: serverIp,
+      hostname,
+      podName: podName || 'N/A',
+      nodeName: nodeName || 'N/A',
+    };
+
+    return res.send({data: result});
+  };
 }
 export const diceController = new PlayerController();
