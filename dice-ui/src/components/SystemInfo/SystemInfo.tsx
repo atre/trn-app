@@ -1,32 +1,33 @@
 import { useEffect, useState } from 'react';
 
 const SystemInfo = () => {
-  const [systemInfo, setSystemInfo] = useState({ ip: '192.168.0.101', hostname: 'localhost', podname: 'application' });
+  const [systemInfo, setSystemInfo] = useState({ ip: '', hostname: '', podName: '' });
 
   useEffect(() => {
-    // Fetch the system info from your backend or use a build-time environment variable
-    // For demonstration, let's assume it's fetched from a backend API
+    // Fetch the system info from the backend API
     fetch('/api/system-info')
       .then(response => response.json())
-      .then(data => setSystemInfo(data))
+      .then(data => {
+        if (data && data.data) {
+          setSystemInfo(data.data);
+        }
+      })
       .catch(error => console.error('Error fetching system info:', error));
   }, []);
 
-  const ip = import.meta.env.VITE_IP;
-  const hostname = import.meta.env.VITE_HOSTNAME;
-  const podname = import.meta.env.VITE_POD_NAME;
+  const hostname = import.meta.env.VITE_HOSTNAME || 'N/A';
+  const podName = import.meta.env.VITE_POD_NAME || 'N/A';
 
   return (
-    <div style={{ position: 'fixed', top: 0, right: 0, padding: '10px', }}>
-      <h2>System Info backend application</h2>
+    <div style={{ position: 'fixed', top: 0, right: 0, padding: '10px' }}>
+      <h2>System Info: Backend Application</h2>
       <p>IP: {systemInfo.ip}</p>
       <p>Hostname: {systemInfo.hostname}</p>
-      <p>Pod Name: {systemInfo.podname}</p>
+      <p>Pod Name: {systemInfo.podName}</p>
       <br />
-      <h2>System Info ui application</h2>
-      <p>IP: {ip}</p>
+      <h2>System Info: UI Application</h2>
       <p>Hostname: {hostname}</p>
-      <p>Pod Name: {podname}</p>
+      <p>Pod Name: {podName}</p>
     </div>
   );
 };

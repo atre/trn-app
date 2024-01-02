@@ -21,11 +21,11 @@ const RootPage = () => {
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const managementUrl = import.meta.env.VITE_MANAGEMENT_URL;
+    // const managementUrl = import.meta.env.VITE_MANAGEMENT_URL;
     console.log('env', import.meta.env);
     console.log('process', process.env);
 
-    const response = await fetch(`${managementUrl}/api/v1/auth/login`, {
+    const response = await fetch(`/api/v1/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
