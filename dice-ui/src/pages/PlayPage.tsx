@@ -15,7 +15,6 @@ const PlayPage = () => {
   }, []);
 
   const handleRoll = async () => {
-    // const entryUrl = import.meta.env.VITE_ENTRY_URL;
     const token = localStorage.getItem('token');
     const response = await fetch(`/api/v1/entry`, {
       method: 'GET',

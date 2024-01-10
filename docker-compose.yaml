@@ -68,7 +68,7 @@ services:
     volumes:
       - ./dice-management:/app
       - management_node_modules:/app/node_modules
-    command: sh -c "yarn migrate && yarn dev"
+    # command: tail -f /dev/null
     networks:
       - dice_network
 

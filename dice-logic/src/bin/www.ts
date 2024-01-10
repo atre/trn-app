@@ -81,7 +81,9 @@ async function onListening() {
 
       if (await gameService.checkForWin(content.userId)) {
         diceRoll.status = true;
-        await rabbit.getRequestResult(diceRoll, 10);
+        // await rabbit.getRequestResult(diceRoll, 10);
+        rabbit.publishMessage(diceRoll, 10, 'postgres_exchange');
+
         return { isWin: true, ...diceRoll };
       }
 

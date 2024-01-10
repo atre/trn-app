@@ -1,24 +1,21 @@
-FROM node:21-alpine as base
+FROM node:21-alpine AS deps
+
 WORKDIR /app
-COPY package.json yarn.lock ./
-EXPOSE 8080
-RUN yarn install --production --frozen-lockfile
+COPY package.json ./
+RUN yarn install --frozen-lockfile
 
-FROM base as dev_deps
-RUN yarn install
-
-FROM dev_deps as builder
-COPY tsconfig.json tsconfig.build.json ./
-COPY src ./src
+#######
+# Rebuild the source code
+FROM node:21-alpine AS builder
+WORKDIR /app
+COPY . .
+COPY --from=deps /app/node_modules ./node_modules
 RUN yarn build
 
-FROM dev_deps as dev
-ENV NODE_ENV=development
-CMD ["yarn", "dev"]
-
-FROM base as prod
-ENV NODE_ENV=production
-COPY --from=builder /app/build /app/build
-COPY ./config /app/config
-COPY ./.env /app/
-CMD ["yarn", "start"]
+#######
+# Build application
+FROM node:21-alpine
+WORKDIR /app
+COPY --from=builder /app /app
+EXPOSE 8080
+CMD [ "yarn", "start" ]
