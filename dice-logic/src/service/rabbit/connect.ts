@@ -47,10 +47,18 @@ export class RabbitConnect {
     return this;
   }
 
-  private reconnect = (): void => {
-    logger.info(`Attempting to reconnect to RabbitMQ in ${this.reconnectInterval / 1000} seconds...`);
-    setTimeout(() => this.connect(), this.reconnectInterval);
-  };
+  private async reconnect() {
+    try {
+      if (this._connection) {
+        await this.disconnect();
+      }
+      await this.connect();
+      logger.info('Reconnected to RabbitMQ');
+    } catch (reconnectError) {
+      logger.error('Reconnection failed', reconnectError);
+      setTimeout(() => this.reconnect(), 5000);
+    }
+  }
 
   private async setupExchangeAndQueue(type: ConnectRabbitType): Promise<void> {
     await this._channel.assertExchange(this.exchange, 'fanout', { durable: false });
