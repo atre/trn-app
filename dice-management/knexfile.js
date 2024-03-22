@@ -13,6 +13,9 @@ module.exports = {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      ssl: {
+        rejectUnauthorized: false // Note: This is not recommended for production as it disables validation of the server certificate
+      }
     },
     migrations: {
       tableName: 'knex_migrations'
@@ -27,6 +30,9 @@ module.exports = {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      ssl: {
+        rejectUnauthorized: false // Note: This is not recommended for production as it disables validation of the server certificate
+      }
     },
     pool: {
       min: 2,
@@ -45,6 +51,9 @@ module.exports = {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      ssl: {
+        rejectUnauthorized: false // Note: This is not recommended for production as it disables validation of the server certificate
+      }
     },
     pool: {
       min: 2,
