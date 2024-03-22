@@ -13,6 +13,9 @@ export const knex = Knex({
     user,
     password,
     database: db,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
   migrations: {
     tableName: 'migrations',
